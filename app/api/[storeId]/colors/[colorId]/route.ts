@@ -1,27 +1,27 @@
 import { db } from "@/lib/prismadb";
-import { SizesFormSchema } from "@/lib/validators/size";
+import { ColorsFormSchema } from "@/lib/validators/color";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 export async function GET(
   req: Request,
-  { params: { sizeId } }: { params: { sizeId: string } }
+  { params: { colorId } }: { params: { colorId: string } }
 ) {
   try {
-    if (!sizeId) {
-      return new NextResponse("Size is required", { status: 400 });
+    if (!colorId) {
+      return new NextResponse("Color is required", { status: 400 });
     }
 
-    const size = await db.size.findUnique({
+    const color = await db.color.findUnique({
       where: {
-        id: sizeId,
+        id: colorId,
       },
     });
 
-    return NextResponse.json(size);
+    return NextResponse.json(color);
   } catch (error) {
-    console.log("size get error", error);
+    console.log("color get error", error);
     if (error instanceof ZodError) {
       return new NextResponse("Invalid Request data passed", { status: 422 });
     }
@@ -32,8 +32,8 @@ export async function GET(
 export async function PATCH(
   req: Request,
   {
-    params: { storeId, sizeId },
-  }: { params: { storeId: string; sizeId: string } }
+    params: { storeId, colorId },
+  }: { params: { storeId: string; colorId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -43,7 +43,7 @@ export async function PATCH(
 
     const body = await req.json();
 
-    const { name, value } = SizesFormSchema.parse(body);
+    const { name, value } = ColorsFormSchema.parse(body);
 
     if (!name) {
       return new NextResponse("Name is required", { status: 400 });
@@ -53,8 +53,8 @@ export async function PATCH(
       return new NextResponse("Value is required", { status: 400 });
     }
 
-    if (!sizeId) {
-      return new NextResponse("Size is required", { status: 400 });
+    if (!colorId) {
+      return new NextResponse("Color is required", { status: 400 });
     }
 
     const storeByUserId = await db.store.findFirst({
@@ -68,9 +68,9 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const size = await db.size.updateMany({
+    const color = await db.color.updateMany({
       where: {
-        id: sizeId,
+        id: colorId,
       },
 
       data: {
@@ -79,9 +79,9 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json(size);
+    return NextResponse.json(color);
   } catch (error) {
-    console.log("size patch", error);
+    console.log("color patch", error);
     if (error instanceof ZodError) {
       return new NextResponse("Invalid Request data passed", { status: 422 });
     }
@@ -92,8 +92,8 @@ export async function PATCH(
 export async function DELETE(
   req: Request,
   {
-    params: { storeId, sizeId },
-  }: { params: { storeId: string; sizeId: string } }
+    params: { storeId, colorId },
+  }: { params: { storeId: string; colorId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -101,8 +101,8 @@ export async function DELETE(
       return new NextResponse("Unauthenticated", { status: 401 });
     }
 
-    if (!sizeId) {
-      return new NextResponse("Size is required", { status: 400 });
+    if (!colorId) {
+      return new NextResponse("Color is required", { status: 400 });
     }
 
     const storeByUserId = await db.store.findFirst({
@@ -116,15 +116,15 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const size = await db.size.deleteMany({
+    const color = await db.color.deleteMany({
       where: {
-        id: sizeId,
+        id: colorId,
       },
     });
 
-    return NextResponse.json(size);
+    return NextResponse.json(color);
   } catch (error) {
-    console.log("Size Error", error);
+    console.log("Color Error", error);
     if (error instanceof ZodError) {
       return new NextResponse("Invalid Request data passed", { status: 422 });
     }

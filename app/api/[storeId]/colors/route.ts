@@ -1,6 +1,5 @@
 import { db } from "@/lib/prismadb";
-import { SizesFormSchema } from "@/lib/validators/size";
-import { StoreFormSchema } from "@/lib/validators/store";
+import { ColorsFormSchema } from "@/lib/validators/color";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
@@ -8,7 +7,7 @@ export async function POST(req: Request, {params: {storeId}}: {params: {storeId:
   try {
     const { userId } = auth();
     const body = await req.json();
-    const { name, value } = SizesFormSchema.parse(body);
+    const { name, value } = ColorsFormSchema.parse(body);
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
@@ -37,7 +36,7 @@ export async function POST(req: Request, {params: {storeId}}: {params: {storeId:
         return new NextResponse("Unauthorized", {status: 403})
     }
 
-    const size = await db.size.create({
+    const color = await db.color.create({
         data: {
             name,
             value,
@@ -45,10 +44,10 @@ export async function POST(req: Request, {params: {storeId}}: {params: {storeId:
         }
     })
 
-    return NextResponse.json(size)
+    return NextResponse.json(color)
 
   } catch (error) {
-    console.log("sizes post", error);
+    console.log("colors post", error);
     return new NextResponse("internal server error", { status: 500 });
   }
 }
@@ -63,16 +62,16 @@ export async function GET(req: Request, {params: {storeId}}: {params: {storeId: 
       }
       
   
-      const sizes = await db.size.findMany({
+      const colors = await db.color.findMany({
           where: {
               storeId
           }
       })
   
-      return NextResponse.json(sizes)
+      return NextResponse.json(colors)
   
     } catch (error) {
-      console.log("sizes get", error);
+      console.log("colors get", error);
       return new NextResponse("internal server error", { status: 500 });
     }
   }
